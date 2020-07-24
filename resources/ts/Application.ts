@@ -1,7 +1,5 @@
-import { Engine, Scene, ArcRotateCamera, Vector3, Color4, HemisphericLight } from "babylonjs";
+import { Engine, Scene, ArcRotateCamera, Vector3, Color4 } from "babylonjs";
 import { MazeGenerator } from "./Maze/MazeGenerator";
-import { MazeCell } from "./Maze/MazeCell";
-
 
 export class BLApplication {
     protected m_Canvas : HTMLCanvasElement;
@@ -29,22 +27,24 @@ export class BLApplication {
         this.m_Engine = new Engine(this.m_Canvas, true);
 
         this.m_Scene = new Scene(this.m_Engine);
-        this.m_Camera = new ArcRotateCamera("Camera", 0, Math.PI/ 2, 5, new Vector3(0,0,0), this.m_Scene);
+        // this.m_Scene.debugLayer.show();
 
+        this.m_Camera = new ArcRotateCamera("Camera", -0.2, 0.66, 35, new Vector3(0,0,0), this.m_Scene);
+        this.m_Camera.attachControl(this.m_Canvas, true);
         // let light = new HemisphericLight("light", new Vector3(0,1,0), this.m_Scene);
 
-        this.m_Camera.attachControl(this.m_Canvas, true);
-
         this.m_MazeGenerator = new MazeGenerator();
-
-        let testCell = new MazeCell();
-
-        this.m_Scene.debugLayer.show();
+        this.m_MazeGenerator.Generate();
         
         this.m_Engine.runRenderLoop(this.Update.bind(this));
     }
 
     protected Update () : void{
+        // console.log(`Radius : ${this.m_Camera.radius}`);
+        // console.log(`Alpha : ${this.m_Camera.alpha}`);
+        // console.log(`Alpha : ${this.m_Camera.beta}`);
+
+
         this.m_Scene.clearColor = new Color4(0,0,0,1);
         this.m_Scene.render();
     }

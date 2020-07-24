@@ -1,4 +1,4 @@
-import { Mesh, MeshBuilder, StandardMaterial, Color3 } from "babylonjs";
+import { Mesh, MeshBuilder, StandardMaterial, Color3, Vector3 } from "babylonjs";
 import { BLApplication } from "../Application";
 import { blackAndWhitePixelShader } from "babylonjs/Shaders/blackAndWhite.fragment";
 
@@ -9,7 +9,10 @@ export class MazeCell {
     protected m_Floor: Mesh;
 
     /**
-     * 
+     * 0 = south 
+     * 1 = west 
+     * 2 = north
+     * 3 = east
      */
     protected m_WallRoots: Mesh[] = [];
 
@@ -22,6 +25,10 @@ export class MazeCell {
         this.m_Index = MazeCell.s_Index;
 
         this.Build();
+    }
+
+    public SetPosition(newPos : Vector3){
+        this.m_Root.position = newPos;
     }
 
     public Build(): void {
