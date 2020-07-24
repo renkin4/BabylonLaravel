@@ -149,10 +149,10 @@ export class MazeCell {
             return;
         }
 
-        console.log(this.m_WallRoots);
-        console.log(`Name : ${this.m_WallRoots[direction].name}`);
-        console.log(`Index : ${this.m_Index}`);
-        console.log(`Direction ${direction}`);
+        // console.log(this.m_WallRoots);
+        // console.log(`Name : ${this.m_WallRoots[direction].name}`);
+        // console.log(`Index : ${this.m_Index}`);
+        // console.log(`Direction ${direction}`);
 
         this.m_WallRoots[direction].dispose();
     }
