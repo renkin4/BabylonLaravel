@@ -3,9 +3,20 @@ import { BLApplication } from "../Application";
 import { blackAndWhitePixelShader } from "babylonjs/Shaders/blackAndWhite.fragment";
 
 export class MazeCell {
-    protected m_Root: Mesh;
     protected bVisited: boolean;
+    public get GetVisited() : boolean {
+        return this.bVisited;
+    }
 
+    /**
+     * 0 = south 
+     * 1 = west 
+     * 2 = north
+     * 3 = east
+     */
+    protected m_Neighbour : Map<number, MazeCell> = new Map<number, MazeCell>();
+
+    protected m_Root: Mesh;
     protected m_Floor: Mesh;
 
     /**
@@ -17,12 +28,12 @@ export class MazeCell {
     protected m_WallRoots: Mesh[] = [];
 
     private m_Index: number = -1;
-    private static s_Index: number = 0;
+    public get GetIndex() :number {
+        return this.m_Index;
+    }
 
-
-    constructor() {
-        MazeCell.s_Index++;
-        this.m_Index = MazeCell.s_Index;
+    constructor(index : number) {
+        this.m_Index = index;
 
         this.Build();
     }
@@ -85,5 +96,40 @@ export class MazeCell {
         }
     }
 
+    public AddNeighbour(direction, newNeighbour) : void{
+        this.m_Neighbour.set(direction, newNeighbour);
+    }
+
+    public NotifyNeighbour(neighbourIndex, neighbourCell) : void{
+        // Yep hacking this
+        if(neighbourIndex === this.m_Index - 1){
+            this.AddNeighbour(1, neighbourCell);
+        }
+        else if (neighbourIndex === this.m_Index + 1){
+            this.AddNeighbour(3, neighbourCell);
+        }
+        else if (neighbourIndex === this.m_Index - 10){
+            this.AddNeighbour(2, neighbourCell);
+        }
+        else if (neighbourIndex === this.m_Index + 10){
+            this.AddNeighbour(0, neighbourCell);
+        }
+    }
+
+    public Visit(): void{
+        if(this.bVisited) return;
+
+
+    }
+
+     /**
+      * 0 = south 
+      * 1 = west 
+      * 2 = north
+      * 3 = east
+      */
+    public RemoveWall(direction : number){
+        this.m_WallRoots[direction].dispose();
+    }
 
 }

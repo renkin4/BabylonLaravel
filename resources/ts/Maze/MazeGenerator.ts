@@ -19,7 +19,7 @@ export class MazeGenerator{
     constructor();
     constructor(property ? : MazeGeneratorProperties);
     constructor(property ? : any){
-        this.m_Properties = property ?? {width : 10, height : 10, generateDelay : 250} as MazeGeneratorProperties;
+        this.m_Properties = property ?? {width : 10, height : 10, generateDelay : 0} as MazeGeneratorProperties;
         
         this.m_AllCells = new Map<number, MazeCell>();
     }
@@ -30,6 +30,7 @@ export class MazeGenerator{
             this.m_GenerateProperties.x = 0;
             this.m_GenerateProperties.y = 0;
 
+            this.NotifyAllNeighbour();
             return;
         }
 
@@ -42,15 +43,38 @@ export class MazeGenerator{
             return;
         }
 
-        let newCell = new MazeCell();
+        let cellIndex = (this.m_Properties.width * this.m_GenerateProperties.x) + this.m_GenerateProperties.y;
+
+        let newCell = new MazeCell(cellIndex);
         newCell.SetPosition(new Vector3((this.m_GenerateProperties.x * 1), 0, (this.m_GenerateProperties.y * 1)));
 
-        this.m_AllCells.set((this.m_Properties.width * this.m_GenerateProperties.x) + this.m_GenerateProperties.y, newCell);
+        this.m_AllCells.set(cellIndex, newCell);
         
         this.m_GenerateProperties.y += 1;
 
         await setTimeout(this.Generate.bind(this), this.m_Properties.generateDelay);
-        console.log(this.m_GenerateProperties);
     }
+
+    protected NotifyAllNeighbour() : void {
+        
+        for(let cells of this.m_AllCells.values()){
+            // Hack
+            if(this.m_AllCells.has(cells.GetIndex - 1)){
+                this.m_AllCells.get(cells.GetIndex - 1).NotifyNeighbour(cells.GetIndex, cells);
+            }
+            if(this.m_AllCells.has(cells.GetIndex + 1)){
+                this.m_AllCells.get(cells.GetIndex + 1).NotifyNeighbour(cells.GetIndex, cells);
+            }
+            if(this.m_AllCells.has(cells.GetIndex + 10)){
+                this.m_AllCells.get(cells.GetIndex + 10).NotifyNeighbour(cells.GetIndex, cells);
+            }
+            if(this.m_AllCells.has(cells.GetIndex - 10)){
+                this.m_AllCells.get(cells.GetIndex - 10).NotifyNeighbour(cells.GetIndex, cells);
+            }
+        }
+
+        // console.log(this.m_AllCells);
+    }
+
 
 }

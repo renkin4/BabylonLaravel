@@ -36,6 +36,10 @@ export class BLApplication {
         this.m_MazeGenerator = new MazeGenerator();
         this.m_MazeGenerator.Generate();
         
+        // the canvas/window resize event handler
+        window.addEventListener('resize', () => {
+            this.m_Engine.resize();
+        });
         this.m_Engine.runRenderLoop(this.Update.bind(this));
     }
 
@@ -43,7 +47,6 @@ export class BLApplication {
         // console.log(`Radius : ${this.m_Camera.radius}`);
         // console.log(`Alpha : ${this.m_Camera.alpha}`);
         // console.log(`Alpha : ${this.m_Camera.beta}`);
-
 
         this.m_Scene.clearColor = new Color4(0,0,0,1);
         this.m_Scene.render();
