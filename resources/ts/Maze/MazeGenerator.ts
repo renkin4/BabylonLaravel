@@ -27,7 +27,7 @@ export class MazeGenerator{
     constructor();
     constructor(property ? : MazeGeneratorProperties);
     constructor(property ? : any){
-        this.m_Properties = property ?? {width : 3, height : 3, generateDelay : 0} as MazeGeneratorProperties;
+        this.m_Properties = property ?? {width : 10, height : 10, generateDelay : 0} as MazeGeneratorProperties;
         
         this.m_Index=0;
         this.m_AllCells = new Map<number, MazeCell>();
@@ -110,15 +110,16 @@ export class MazeGenerator{
     }
 
     protected async StartCreateMaze() : Promise<void>{
-        // this.VisitCells();
+        this.VisitCells();
     }
 
-    private VisitCells() : number {
+    private async VisitCells() : Promise<number> {
         let currentIndex = -1;
 
         if(this.m_CurrentVisitCell == null){
             currentIndex = Math.floor(Math.random() * (this.m_AllCells.size));
             this.m_CurrentVisitCell = this.m_AllCells.get(currentIndex);
+            this.m_StackCell.push(this.m_CurrentVisitCell);
             this.m_CurrentVisitCell.Visit();
         }
         else{
@@ -134,9 +135,11 @@ export class MazeGenerator{
         }
 
         // for now 
-        if(!bHasNeighbourLeft) return;
-
-        let currentCell = this.m_CurrentVisitCell;
+        if(!bHasNeighbourLeft) {
+            let bFinished = !this.Backtrack();
+            if(bFinished) return;
+        }
+        
         let nextCellIndex = Math.floor(Math.random() * this.m_CurrentVisitCell.GetNeighbour.size);
         let nextCell = this.m_CurrentVisitCell.GetRandomNeighbour(nextCellIndex);
         
@@ -151,16 +154,41 @@ export class MazeGenerator{
 
         this.m_CurrentVisitCell.RemoveWall(nextCell.direction);
         
-        // console.log((nextCellIndex + 2) % 4);
-
         this.m_PreviousVisitCell.UnVisit();
         this.m_CurrentVisitCell.Visit();
+        this.m_StackCell.push(this.m_CurrentVisitCell);
 
         // setTimeout(() => {
         //     this.VisitCells();
-        // }, 500);
+        // }, 0);
         return currentIndex;
     }
 
+    protected async Backtrack() : Promise<boolean>{
+        if(this.m_StackCell.length == 0){
+            return false;
+        }
 
+        let bNeigbhourExist = false;
+
+        this.m_PreviousVisitCell = this.m_CurrentVisitCell;
+        this.m_PreviousVisitCell.UnVisit();
+
+        this.m_CurrentVisitCell = this.m_StackCell.pop();
+        this.m_CurrentVisitCell.Visit();
+
+        for(let cell of this.m_CurrentVisitCell.GetNeighbour.values()){
+            bNeigbhourExist = !cell.GetVisited;
+            if(bNeigbhourExist) {
+                this.m_CurrentVisitCell = cell;
+                break;
+            }
+        }
+
+        if(!bNeigbhourExist) {
+            return this.Backtrack();
+        }
+
+        return true;
+    }
 }
