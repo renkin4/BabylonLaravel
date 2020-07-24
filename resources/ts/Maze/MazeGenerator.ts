@@ -29,7 +29,7 @@ export class MazeGenerator{
     constructor();
     constructor(property ? : MazeGeneratorProperties);
     constructor(property ? : any){
-        this.m_Properties = property ?? {width : 10, height : 10, generateDelay : 0} as MazeGeneratorProperties;
+        this.m_Properties = property ?? {width : 20, height : 20, generateDelay : 0} as MazeGeneratorProperties;
         
         this.m_Index=0;
         this.m_AllCells = new Map<number, MazeCell>();
@@ -162,7 +162,7 @@ export class MazeGenerator{
 
         this.m_PrivateTimerHandler = setTimeout(() => {
             this.VisitCells();
-        }, 50);
+        }, 0);
     }
 
     protected async Backtrack() : Promise<boolean>{ 
@@ -170,14 +170,9 @@ export class MazeGenerator{
             this.m_CurrentVisitCell = null;
             return false;
         }
-
         let bNeigbhourExist = false;
 
-        // this.m_PreviousVisitCell = this.m_CurrentVisitCell;
-        // this.m_PreviousVisitCell.UnVisit();
-
         this.m_CurrentVisitCell = this.m_StackCell.pop(); 
-        // this.m_CurrentVisitCell.Visit();
 
         for(let cell of this.m_CurrentVisitCell.GetNeighbour.values()){
             bNeigbhourExist = !cell.GetVisited;
