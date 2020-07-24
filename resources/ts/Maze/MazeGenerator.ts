@@ -1,5 +1,6 @@
 import { MazeCell } from "./MazeCell";
 import { Vector3 } from "babylonjs";
+import { BLApplication } from "../Application";
 
 export interface MazeGeneratorProperties{
     width ? : number;
@@ -26,10 +27,25 @@ export class MazeGenerator{
     constructor();
     constructor(property ? : MazeGeneratorProperties);
     constructor(property ? : any){
-        this.m_Properties = property ?? {width : 2, height : 2, generateDelay : 0} as MazeGeneratorProperties;
+        this.m_Properties = property ?? {width : 3, height : 3, generateDelay : 0} as MazeGeneratorProperties;
         
         this.m_Index=0;
         this.m_AllCells = new Map<number, MazeCell>();
+
+        BLApplication.Get.GetScene.onKeyboardObservable.add((kbInfo) => {
+            switch (kbInfo.type) {
+                case BABYLON.KeyboardEventTypes.KEYDOWN:
+                    if(kbInfo.event.keyCode !== 13){
+                        break;
+                    }
+
+                    this.VisitCells();
+                    break;
+                case BABYLON.KeyboardEventTypes.KEYUP:
+                    // console.log("KEY UP: ", kbInfo.event.keyCode);
+                    break;
+            }
+        });
     }
 
     public async Generate() : Promise<void> {
@@ -52,9 +68,12 @@ export class MazeGenerator{
             return;
         }
 
-        let cellIndex = this.m_Index;
+        let cellIndex = (this.m_GenerateProperties.x * this.m_Properties.width) + this.m_GenerateProperties.y + this.m_GenerateProperties.x;
 
         let newCell = new MazeCell(cellIndex);
+        newCell.x = this.m_GenerateProperties.x;
+        newCell.y = this.m_GenerateProperties.y;
+
         newCell.SetPosition(new Vector3((this.m_GenerateProperties.x * 1), 0, (this.m_GenerateProperties.y * 1)));
 
         this.m_AllCells.set(cellIndex, newCell);
@@ -69,17 +88,21 @@ export class MazeGenerator{
         
         for(let cells of this.m_AllCells.values()){
             // Hack
-            if(this.m_AllCells.has(cells.GetIndex - 1)){
-                this.m_AllCells.get(cells.GetIndex - 1).NotifyNeighbour(cells.GetIndex, cells);
+            if(this.m_AllCells.has(cells.GetIndex - (this.m_Properties.width + 1)) && cells.x - 1 >= 0){
+                // if(cells.GetIndex == 4) console.log("1.............");
+                this.m_AllCells.get(cells.GetIndex - (this.m_Properties.width + 1)).AddNeighbour(2, cells);
             }
-            if(this.m_AllCells.has(cells.GetIndex + 1)){
-                this.m_AllCells.get(cells.GetIndex + 1).NotifyNeighbour(cells.GetIndex, cells);
+            if(this.m_AllCells.has(cells.GetIndex + (this.m_Properties.width + 1)) && cells.x + 1 <= this.m_Properties.width){
+                // if(cells.GetIndex == 4) console.log("2.............");
+                this.m_AllCells.get(cells.GetIndex + (this.m_Properties.width + 1)).AddNeighbour(0, cells);
             }
-            if(this.m_AllCells.has(cells.GetIndex + 10)){
-                this.m_AllCells.get(cells.GetIndex + 10).NotifyNeighbour(cells.GetIndex, cells);
+            if(this.m_AllCells.has(cells.GetIndex + 1) && cells.y + 1 <= this.m_Properties.height){
+                // if(cells.GetIndex == 4) console.log("3.............");
+                this.m_AllCells.get(cells.GetIndex + 1).AddNeighbour(3, cells);
             }
-            if(this.m_AllCells.has(cells.GetIndex - 10)){
-                this.m_AllCells.get(cells.GetIndex - 10).NotifyNeighbour(cells.GetIndex, cells);
+            if(this.m_AllCells.has(cells.GetIndex - 1)&& cells.y - 1 >= 0){
+                // if(cells.GetIndex == 4) console.log("4.............");
+                this.m_AllCells.get(cells.GetIndex - 1).AddNeighbour(1, cells);
             }
         }
 
@@ -87,7 +110,7 @@ export class MazeGenerator{
     }
 
     protected async StartCreateMaze() : Promise<void>{
-        this.VisitCells();
+        // this.VisitCells();
     }
 
     private VisitCells() : number {
@@ -103,6 +126,7 @@ export class MazeGenerator{
         }
 
         let bHasNeighbourLeft = false;
+
         // Check if Current Cell still has any left over unvisited 
         for(let cell of this.m_CurrentVisitCell.GetNeighbour.values()){
             bHasNeighbourLeft = !cell.GetVisited;
@@ -120,20 +144,21 @@ export class MazeGenerator{
             return this.VisitCells();
         }
         
-        this.m_CurrentVisitCell.RemoveWall(nextCellIndex);
+        this.m_CurrentVisitCell.RemoveWall((nextCellIndex + 2) % 4);
 
         this.m_PreviousVisitCell = this.m_CurrentVisitCell;
         this.m_CurrentVisitCell = nextCell;
+        
+        this.m_CurrentVisitCell.RemoveWall(nextCellIndex);
 
-        this.m_CurrentVisitCell.RemoveWall((nextCellIndex + 2) % 4);
         // console.log((nextCellIndex + 2) % 4);
 
         this.m_PreviousVisitCell.UnVisit();
         this.m_CurrentVisitCell.Visit();
 
-        setTimeout(() => {
-            this.VisitCells();
-        }, 500);
+        // setTimeout(() => {
+        //     this.VisitCells();
+        // }, 500);
         return currentIndex;
     }
 

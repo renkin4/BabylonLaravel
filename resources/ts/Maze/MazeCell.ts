@@ -4,6 +4,10 @@ import { blackAndWhitePixelShader } from "babylonjs/Shaders/blackAndWhite.fragme
 
 export class MazeCell {
     public name:string;
+
+    public x : number;
+    public y : number;
+
     protected bVisited: boolean;
     public get GetVisited() : boolean {
         return this.bVisited;
@@ -101,6 +105,7 @@ export class MazeCell {
     }
 
     public AddNeighbour(direction, newNeighbour) : void{
+        if(newNeighbour.GetIndex == 4) console.log(`This Cell Index : ${this.m_Index}, Direction ${direction}`);
         this.m_Neighbour.set(direction, newNeighbour);
     }
 
@@ -144,10 +149,10 @@ export class MazeCell {
             return;
         }
 
-        // console.log(this.m_WallRoots);
-        // console.log(this.m_WallRoots[direction].name);
-        // console.log(this.m_Index);
-        // console.log(direction);
+        console.log(this.m_WallRoots);
+        console.log(`Name : ${this.m_WallRoots[direction].name}`);
+        console.log(`Index : ${this.m_Index}`);
+        console.log(`Direction ${direction}`);
 
         this.m_WallRoots[direction].dispose();
     }
