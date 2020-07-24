@@ -15,6 +15,9 @@ export class MazeCell {
      * 3 = east
      */
     protected m_Neighbour : Map<number, MazeCell> = new Map<number, MazeCell>();
+    public get GetNeighbour() : Map<number, MazeCell>{
+        return this.m_Neighbour;
+    }
 
     protected m_Root: Mesh;
     protected m_Floor: Mesh;
@@ -117,9 +120,15 @@ export class MazeCell {
     }
 
     public Visit(): void{
-        if(this.bVisited) return;
+        let material : StandardMaterial= <StandardMaterial>this.m_Floor.material;
+        material.emissiveColor = Color3.Teal();
 
+        this.bVisited = true;
+    }
 
+    public UnVisit(): void{
+        let material : StandardMaterial= <StandardMaterial>this.m_Floor.material;
+        material.emissiveColor = Color3.Magenta();
     }
 
      /**
@@ -129,7 +138,31 @@ export class MazeCell {
       * 3 = east
       */
     public RemoveWall(direction : number){
+        if(!this.m_WallRoots[direction]){
+            return;
+        }
         this.m_WallRoots[direction].dispose();
+    }
+
+    public GetRandomNeighbour(randomCellIndex : number) : MazeCell{
+        let allNeighbourDir = [];
+        
+        for(let direction of this.m_Neighbour.keys()){
+            allNeighbourDir.push(direction);
+        }
+
+        let choosenCellIndex = allNeighbourDir[randomCellIndex];
+        let choosenCell = this.GetNeighbourCell(choosenCellIndex);
+        return choosenCell;
+    }
+
+    public GetNeighbourCell(index : number) : MazeCell{
+        if(!this.m_Neighbour.has(index)){
+            console.error(`Cell Doesn't have naighbour index ${index}`);
+            return null;
+        }
+
+        return this.m_Neighbour.get(index);
     }
 
 }

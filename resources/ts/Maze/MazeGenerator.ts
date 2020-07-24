@@ -14,6 +14,11 @@ export class MazeGenerator{
 
     protected m_AllCells : Map<number, MazeCell>;
 
+    protected m_CurrentVisitCell : MazeCell;
+    protected m_PreviousVisitCell : MazeCell;
+
+    protected m_StackCell : MazeCell[] = [];
+
     private m_GenerateProperties : {x , y} = {x : 0, y : 0};
 
     constructor();
@@ -31,6 +36,7 @@ export class MazeGenerator{
             this.m_GenerateProperties.y = 0;
 
             this.NotifyAllNeighbour();
+            this.StartCreateMaze();
             return;
         }
 
@@ -74,6 +80,56 @@ export class MazeGenerator{
         }
 
         // console.log(this.m_AllCells);
+    }
+
+    protected async StartCreateMaze() : Promise<void>{
+        this.VisitCells();
+    }
+
+    private VisitCells() : number {
+        let currentIndex = -1;
+
+        if(this.m_CurrentVisitCell == null){
+            currentIndex = Math.floor(Math.random() * (this.m_AllCells.size));
+            this.m_CurrentVisitCell = this.m_AllCells.get(currentIndex);
+            this.m_CurrentVisitCell.Visit();
+        }
+        else{
+            currentIndex = this.m_CurrentVisitCell.GetIndex;
+        }
+
+        let bHasNeighbourLeft = false;
+        // Check if Current Cell still has any left over unvisited 
+        for(let cell of this.m_CurrentVisitCell.GetNeighbour.values()){
+            bHasNeighbourLeft = !cell.GetVisited;
+            if(bHasNeighbourLeft) break;
+        }
+
+        // for now 
+        if(!bHasNeighbourLeft) return;
+
+        let currentCell = this.m_CurrentVisitCell;
+        let nextCellIndex = Math.floor(Math.random() * this.m_CurrentVisitCell.GetNeighbour.size);
+        let nextCell = this.m_CurrentVisitCell.GetRandomNeighbour(nextCellIndex);
+        
+        if(nextCell.GetVisited){
+            return this.VisitCells();
+        }
+        
+        this.m_CurrentVisitCell.RemoveWall(nextCellIndex);
+
+        this.m_PreviousVisitCell = this.m_CurrentVisitCell;
+        this.m_CurrentVisitCell = nextCell;
+
+        this.m_CurrentVisitCell.RemoveWall(nextCellIndex + 2 % 4);
+
+        this.m_PreviousVisitCell.UnVisit();
+        this.m_CurrentVisitCell.Visit();
+
+        setTimeout(() => {
+            this.VisitCells();
+        }, 1000);
+        return currentIndex;
     }
 
 
