@@ -3,6 +3,7 @@ import { BLApplication } from "../Application";
 import { blackAndWhitePixelShader } from "babylonjs/Shaders/blackAndWhite.fragment";
 
 export class MazeCell {
+    public name:string;
     protected bVisited: boolean;
     public get GetVisited() : boolean {
         return this.bVisited;
@@ -37,7 +38,7 @@ export class MazeCell {
 
     constructor(index : number) {
         this.m_Index = index;
-
+        this.name = `Cell_${this.m_Index}`;
         this.Build();
     }
 
@@ -139,14 +140,21 @@ export class MazeCell {
       */
     public RemoveWall(direction : number){
         if(!this.m_WallRoots[direction]){
+            console.error(`ERROR Trying to remove wall that doesn't exist : ${direction}`);
             return;
         }
+
+        // console.log(this.m_WallRoots);
+        // console.log(this.m_WallRoots[direction].name);
+        // console.log(this.m_Index);
+        // console.log(direction);
+
         this.m_WallRoots[direction].dispose();
     }
 
     public GetRandomNeighbour(randomCellIndex : number) : MazeCell{
         let allNeighbourDir = [];
-        
+
         for(let direction of this.m_Neighbour.keys()){
             allNeighbourDir.push(direction);
         }
@@ -165,4 +173,7 @@ export class MazeCell {
         return this.m_Neighbour.get(index);
     }
 
+    public toString() :string{
+        return this.m_Root.name;
+    }
 }

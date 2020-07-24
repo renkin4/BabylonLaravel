@@ -21,11 +21,14 @@ export class MazeGenerator{
 
     private m_GenerateProperties : {x , y} = {x : 0, y : 0};
 
+    private m_Index : number;
+
     constructor();
     constructor(property ? : MazeGeneratorProperties);
     constructor(property ? : any){
-        this.m_Properties = property ?? {width : 10, height : 10, generateDelay : 0} as MazeGeneratorProperties;
+        this.m_Properties = property ?? {width : 2, height : 2, generateDelay : 0} as MazeGeneratorProperties;
         
+        this.m_Index=0;
         this.m_AllCells = new Map<number, MazeCell>();
     }
 
@@ -49,7 +52,7 @@ export class MazeGenerator{
             return;
         }
 
-        let cellIndex = (this.m_Properties.width * this.m_GenerateProperties.x) + this.m_GenerateProperties.y;
+        let cellIndex = this.m_Index;
 
         let newCell = new MazeCell(cellIndex);
         newCell.SetPosition(new Vector3((this.m_GenerateProperties.x * 1), 0, (this.m_GenerateProperties.y * 1)));
@@ -58,6 +61,7 @@ export class MazeGenerator{
         
         this.m_GenerateProperties.y += 1;
 
+        this.m_Index++;
         await setTimeout(this.Generate.bind(this), this.m_Properties.generateDelay);
     }
 
@@ -79,7 +83,7 @@ export class MazeGenerator{
             }
         }
 
-        // console.log(this.m_AllCells);
+        console.log(this.m_AllCells);
     }
 
     protected async StartCreateMaze() : Promise<void>{
@@ -121,14 +125,15 @@ export class MazeGenerator{
         this.m_PreviousVisitCell = this.m_CurrentVisitCell;
         this.m_CurrentVisitCell = nextCell;
 
-        this.m_CurrentVisitCell.RemoveWall(nextCellIndex + 2 % 4);
+        this.m_CurrentVisitCell.RemoveWall((nextCellIndex + 2) % 4);
+        // console.log((nextCellIndex + 2) % 4);
 
         this.m_PreviousVisitCell.UnVisit();
         this.m_CurrentVisitCell.Visit();
 
         setTimeout(() => {
             this.VisitCells();
-        }, 1000);
+        }, 500);
         return currentIndex;
     }
 
