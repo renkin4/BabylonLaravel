@@ -105,7 +105,7 @@ export class MazeCell {
     }
 
     public AddNeighbour(direction, newNeighbour) : void{
-        if(newNeighbour.GetIndex == 4) console.log(`This Cell Index : ${this.m_Index}, Direction ${direction}`);
+        // if(newNeighbour.GetIndex == 4) console.log(`This Cell Index : ${this.m_Index}, Direction ${direction}`);
         this.m_Neighbour.set(direction, newNeighbour);
     }
 
@@ -157,7 +157,7 @@ export class MazeCell {
         this.m_WallRoots[direction].dispose();
     }
 
-    public GetRandomNeighbour(randomCellIndex : number) : MazeCell{
+    public GetRandomNeighbour(randomCellIndex : number){
         let allNeighbourDir = [];
 
         for(let direction of this.m_Neighbour.keys()){
@@ -166,7 +166,7 @@ export class MazeCell {
 
         let choosenCellIndex = allNeighbourDir[randomCellIndex];
         let choosenCell = this.GetNeighbourCell(choosenCellIndex);
-        return choosenCell;
+        return {cell: choosenCell, direction : choosenCellIndex};
     }
 
     public GetNeighbourCell(index : number) : MazeCell{

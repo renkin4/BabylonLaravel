@@ -140,17 +140,17 @@ export class MazeGenerator{
         let nextCellIndex = Math.floor(Math.random() * this.m_CurrentVisitCell.GetNeighbour.size);
         let nextCell = this.m_CurrentVisitCell.GetRandomNeighbour(nextCellIndex);
         
-        if(nextCell.GetVisited){
+        if(nextCell.cell.GetVisited){
             return this.VisitCells();
         }
         
-        this.m_CurrentVisitCell.RemoveWall((nextCellIndex + 2) % 4);
+        this.m_CurrentVisitCell.RemoveWall((nextCell.direction + 2) % 4);
 
         this.m_PreviousVisitCell = this.m_CurrentVisitCell;
-        this.m_CurrentVisitCell = nextCell;
-        
-        this.m_CurrentVisitCell.RemoveWall(nextCellIndex);
+        this.m_CurrentVisitCell = nextCell.cell;
 
+        this.m_CurrentVisitCell.RemoveWall(nextCell.direction);
+        
         // console.log((nextCellIndex + 2) % 4);
 
         this.m_PreviousVisitCell.UnVisit();
