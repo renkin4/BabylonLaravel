@@ -24,10 +24,12 @@ export class MazeGenerator{
 
     private m_Index : number;
 
+    private m_PrivateTimerHandler;
+
     constructor();
     constructor(property ? : MazeGeneratorProperties);
     constructor(property ? : any){
-        this.m_Properties = property ?? {width : 5, height : 5, generateDelay : 0} as MazeGeneratorProperties;
+        this.m_Properties = property ?? {width : 10, height : 10, generateDelay : 0} as MazeGeneratorProperties;
         
         this.m_Index=0;
         this.m_AllCells = new Map<number, MazeCell>();
@@ -110,15 +112,17 @@ export class MazeGenerator{
     }
 
     protected async StartCreateMaze() : Promise<void>{
+        let randomIndex = Math.floor(Math.random() * (this.m_AllCells.size));
+        this.m_CurrentVisitCell = this.m_AllCells.get(randomIndex);
+        this.m_StackCell.push(this.m_CurrentVisitCell);
+        this.m_CurrentVisitCell.Visit();
+
         this.VisitCells();
     }
 
     private async VisitCells() : Promise<number> {
         if(this.m_CurrentVisitCell == null){
-            let randomIndex = Math.floor(Math.random() * (this.m_AllCells.size));
-            this.m_CurrentVisitCell = this.m_AllCells.get(randomIndex);
-            this.m_StackCell.push(this.m_CurrentVisitCell);
-            this.m_CurrentVisitCell.Visit();
+            return;
         }
 
         let bHasNeighbourLeft = false;
@@ -129,10 +133,14 @@ export class MazeGenerator{
             if(bHasNeighbourLeft) break;
         }
 
+        var bFinished;
+
         if(!bHasNeighbourLeft) {
-            let bFinished = !this.Backtrack();
+            bFinished = !this.Backtrack();
             if(bFinished) return;
         }
+
+        if(!this.m_CurrentVisitCell) return;
         
         let nextCellIndex = Math.floor(Math.random() * this.m_CurrentVisitCell.GetNeighbour.size);
         let nextCell = this.m_CurrentVisitCell.GetRandomNeighbour(nextCellIndex);
@@ -152,13 +160,14 @@ export class MazeGenerator{
         this.m_CurrentVisitCell.Visit();
         this.m_StackCell.push(this.m_CurrentVisitCell);
 
-        // setTimeout(() => {
-        //     this.VisitCells();
-        // }, 0);
+        this.m_PrivateTimerHandler = setTimeout(() => {
+            this.VisitCells();
+        }, 50);
     }
 
-    protected async Backtrack() : Promise<boolean>{
-        if(this.m_StackCell.length == 0){
+    protected async Backtrack() : Promise<boolean>{ 
+        if(this.m_StackCell.length <= 0 || !this.m_StackCell || !this.m_StackCell[0]){
+            this.m_CurrentVisitCell = null;
             return false;
         }
 
