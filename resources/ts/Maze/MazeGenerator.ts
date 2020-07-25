@@ -81,7 +81,7 @@ export class MazeGenerator{
         }
 
         let cellIndex = (this.m_GenerateProperties.x * this.m_Properties.height) + this.m_GenerateProperties.y + this.m_GenerateProperties.x;
-        console.log(cellIndex);
+
         let newCell = new MazeCell(cellIndex);
         newCell.x = this.m_GenerateProperties.x;
         newCell.y = this.m_GenerateProperties.y;
@@ -99,13 +99,13 @@ export class MazeGenerator{
         
         for(let cells of this.m_AllCells.values()){
             // Hack
-            if(this.m_AllCells.has(cells.GetIndex - (this.m_Properties.width + 1)) && cells.x - 1 >= 0){
+            if(this.m_AllCells.has(cells.GetIndex - (this.m_Properties.height + 1)) && cells.x - 1 >= 0){
                 // if(cells.GetIndex == 4) console.log("1.............");
-                this.m_AllCells.get(cells.GetIndex - (this.m_Properties.width + 1)).AddNeighbour(2, cells);
+                this.m_AllCells.get(cells.GetIndex - (this.m_Properties.height + 1)).AddNeighbour(2, cells);
             }
-            if(this.m_AllCells.has(cells.GetIndex + (this.m_Properties.width + 1)) && cells.x + 1 <= this.m_Properties.width){
+            if(this.m_AllCells.has(cells.GetIndex + (this.m_Properties.height + 1)) && cells.x + 1 <= this.m_Properties.height){
                 // if(cells.GetIndex == 4) console.log("2.............");
-                this.m_AllCells.get(cells.GetIndex + (this.m_Properties.width + 1)).AddNeighbour(0, cells);
+                this.m_AllCells.get(cells.GetIndex + (this.m_Properties.height + 1)).AddNeighbour(0, cells);
             }
             if(this.m_AllCells.has(cells.GetIndex + 1) && cells.y + 1 <= this.m_Properties.height){
                 // if(cells.GetIndex == 4) console.log("3.............");
