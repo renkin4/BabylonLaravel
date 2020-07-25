@@ -63,6 +63,8 @@ export class MazeCell {
 
         let ChooseColor  = (index: number) => {
             let color :Color3;
+            color = Color3.Gray();
+            return color;
             switch (index) {
                 case 0:
                     color = Color3.Red();

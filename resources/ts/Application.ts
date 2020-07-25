@@ -1,5 +1,6 @@
 import { Engine, Scene, ArcRotateCamera, Vector3, Color4 } from "babylonjs";
 import { MazeGenerator } from "./Maze/MazeGenerator";
+import * as dat from 'dat.gui/build/dat.gui.js'
 
 export class BLApplication {
     protected m_Canvas : HTMLCanvasElement;
@@ -33,8 +34,29 @@ export class BLApplication {
         this.m_Camera.attachControl(this.m_Canvas, true);
         // let light = new HemisphericLight("light", new Vector3(0,1,0), this.m_Scene);
 
-        this.m_MazeGenerator = new MazeGenerator();
-        this.m_MazeGenerator.Generate();
+
+        let MazeGeneratorProps = { 
+            Generate: () => {
+                self.m_MazeGenerator.Generate();
+            },
+            width : 5,
+            height : 5,
+            delay : 50,
+        };
+
+        this.m_MazeGenerator = new MazeGenerator({width : MazeGeneratorProps.width, height : MazeGeneratorProps.height, generateDelay : MazeGeneratorProps.delay}); 
+
+        let gui = new dat.GUI();
+        gui.domElement.style.marginTop = "100px";
+        gui.domElement.id = "datGUI";
+        
+        var self =this;
+
+
+        gui.add(MazeGeneratorProps,'width', 2, 100);
+        gui.add(MazeGeneratorProps,'height', 2, 100);
+        gui.add(MazeGeneratorProps,'delay', 0, 1000);
+        gui.add(MazeGeneratorProps,'Generate');
         
         // the canvas/window resize event handler
         window.addEventListener('resize', () => {

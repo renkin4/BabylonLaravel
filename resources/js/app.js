@@ -30,5 +30,3 @@ Vue.component('babylon-component', require('./components/BabylonComponent.vue').
 const app = new Vue({
     el: '#app',
 });
-
-console.log("App");

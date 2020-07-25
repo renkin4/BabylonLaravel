@@ -26,6 +26,7 @@
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
-        "babylonjs": "^4.1.0"
+        "babylonjs": "^4.1.0",
+        "dat.gui": "^0.7.7"
     }
 }

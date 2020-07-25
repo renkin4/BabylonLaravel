@@ -29,7 +29,7 @@ export class MazeGenerator{
     constructor();
     constructor(property ? : MazeGeneratorProperties);
     constructor(property ? : any){
-        this.m_Properties = property ?? {width : 20, height : 20, generateDelay : 0} as MazeGeneratorProperties;
+        this.m_Properties = property ?? {width : 10, height : 10, generateDelay : 0} as MazeGeneratorProperties;
         
         this.m_Index=0;
         this.m_AllCells = new Map<number, MazeCell>();
@@ -108,7 +108,7 @@ export class MazeGenerator{
             }
         }
 
-        console.log(this.m_AllCells);
+        // console.log(this.m_AllCells);
     }
 
     protected async StartCreateMaze() : Promise<void>{
