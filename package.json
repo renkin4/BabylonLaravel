@@ -27,6 +27,7 @@
     },
     "dependencies": {
         "babylonjs": "^4.1.0",
+        "babylonjs-loaders": "^4.1.0",
         "dat.gui": "^0.7.7"
     }
 }

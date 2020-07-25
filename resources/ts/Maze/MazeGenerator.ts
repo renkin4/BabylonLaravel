@@ -1,5 +1,5 @@
 import { MazeCell } from "./MazeCell";
-import { Vector3 } from "babylonjs";
+import { Vector3, SceneLoader, StandardMaterial, Color3, MeshBuilder } from "babylonjs";
 import { BLApplication } from "../Application";
 
 export interface MazeGeneratorProperties{
@@ -22,16 +22,13 @@ export class MazeGenerator{
 
     private m_GenerateProperties : {x , y} = {x : 0, y : 0};
 
-    private m_Index : number;
-
-    private m_PrivateTimerHandler;
+    private bFirstBacktrack : boolean;
 
     constructor();
     constructor(property ? : MazeGeneratorProperties);
     constructor(property ? : any){
         this.m_Properties = property ?? {width : 10, height : 10, generateDelay : 0} as MazeGeneratorProperties;
-        
-        this.m_Index=0;
+         
         this.m_AllCells = new Map<number, MazeCell>();
 
         BLApplication.Get.GetScene.onKeyboardObservable.add((kbInfo) => {
@@ -48,6 +45,19 @@ export class MazeGenerator{
                     break;
             }
         });
+
+    }
+
+    public Dispose() : void {
+        this.RemoveAll();
+    }
+
+    public RemoveAll() : void {
+        for(let cell of this.m_AllCells.values()){
+            cell.Dispose();
+        }
+
+        this.m_AllCells = new Map<number, MazeCell>();
     }
 
     public async Generate() : Promise<void> {
@@ -81,8 +91,7 @@ export class MazeGenerator{
         this.m_AllCells.set(cellIndex, newCell);
         
         this.m_GenerateProperties.y += 1;
-
-        this.m_Index++;
+ 
         await setTimeout(this.Generate.bind(this), this.m_Properties.generateDelay);
     }
 
@@ -136,7 +145,9 @@ export class MazeGenerator{
         var bFinished;
 
         if(!bHasNeighbourLeft) {
+            this.bFirstBacktrack = true;
             bFinished = !this.Backtrack();
+
             if(bFinished) return;
         }
 
@@ -160,7 +171,7 @@ export class MazeGenerator{
         this.m_CurrentVisitCell.Visit();
         this.m_StackCell.push(this.m_CurrentVisitCell);
 
-        this.m_PrivateTimerHandler = setTimeout(() => {
+        setTimeout(() => {
             this.VisitCells();
         }, 0);
     }
@@ -170,6 +181,12 @@ export class MazeGenerator{
             this.m_CurrentVisitCell = null;
             return false;
         }
+        if(this.bFirstBacktrack){
+            this.m_CurrentVisitCell.GeneratePOI();
+        }
+
+        this.bFirstBacktrack = false;
+
         let bNeigbhourExist = false;
 
         this.m_CurrentVisitCell = this.m_StackCell.pop(); 

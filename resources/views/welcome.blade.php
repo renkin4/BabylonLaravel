@@ -24,7 +24,7 @@
     </head>
     <body> 
         <div id="app">
-            <babylon-component></babylon-component>
+            <babylon-component asset-path="{{ asset('/') }}"></babylon-component>
         </div>
         <script src="{{ mix('js/app.js') }}"></script>
     </body>

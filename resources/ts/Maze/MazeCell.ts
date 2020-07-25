@@ -26,6 +26,7 @@ export class MazeCell {
 
     protected m_Root: Mesh;
     protected m_Floor: Mesh;
+    protected m_POI : Mesh;
 
     /**
      * 0 = south 
@@ -48,6 +49,42 @@ export class MazeCell {
 
     public SetPosition(newPos : Vector3){
         this.m_Root.position = newPos;
+    }
+
+    public Dispose() :void {
+        if(this.m_POI){
+            this.m_POI.material.dispose();
+            this.m_POI.dispose();            
+        }
+
+        this.m_Floor.material.dispose();
+
+        // console.log(this.m_WallRoots);
+        for (let it = 0; it < this.m_WallRoots.length; it++) {
+            const element = this.m_WallRoots[it]; 
+            if(!element) continue;
+            
+            const wall = <Mesh>element.getChildren()[0];
+            if(!wall) continue;
+            wall.material.dispose();
+        }
+
+        this.m_Root.dispose();
+    }
+
+    public GeneratePOI() :void {
+        this.m_POI = MeshBuilder.CreateBox("", {width : 0.5, height : 4, depth : 0.5}, BLApplication.Get.GetScene);
+        let mat = new StandardMaterial("", BLApplication.Get.GetScene);
+
+        mat.emissiveColor = Color3.Yellow();
+
+        this.m_POI.material = mat;
+
+        this.m_POI.position = this.GetPosition();
+    }
+
+    public GetPosition() : Vector3{
+        return this.m_Root.position;
     }
 
     public Build(): void {
@@ -156,7 +193,11 @@ export class MazeCell {
         // console.log(`Index : ${this.m_Index}`);
         // console.log(`Direction ${direction}`);
 
+        const wall = <Mesh>this.m_WallRoots[direction].getChildren()[0];
+        wall.material.dispose();
+
         this.m_WallRoots[direction].dispose();
+        this.m_WallRoots[direction] = null;
     }
 
     public GetRandomNeighbour(randomCellIndex : number){

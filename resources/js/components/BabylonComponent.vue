@@ -7,10 +7,10 @@ import { BLApplication } from "../../ts/Application";
 
 export default {
     props:{
-
+        assetPath: ""
     },
     mounted() {
-        let Application = new BLApplication(this.$refs.canvas);
+        let Application = new BLApplication(this.$refs.canvas, this.assetPath);
         // console.log();
     }
 }
