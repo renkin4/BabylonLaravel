@@ -80,8 +80,8 @@ export class MazeGenerator{
             return;
         }
 
-        let cellIndex = (this.m_GenerateProperties.x * this.m_Properties.width) + this.m_GenerateProperties.y + this.m_GenerateProperties.x;
-
+        let cellIndex = (this.m_GenerateProperties.x * this.m_Properties.height) + this.m_GenerateProperties.y + this.m_GenerateProperties.x;
+        console.log(cellIndex);
         let newCell = new MazeCell(cellIndex);
         newCell.x = this.m_GenerateProperties.x;
         newCell.y = this.m_GenerateProperties.y;
@@ -122,6 +122,7 @@ export class MazeGenerator{
 
     protected async StartCreateMaze() : Promise<void>{
         let randomIndex = Math.floor(Math.random() * (this.m_AllCells.size));
+        console.log(randomIndex);
         this.m_CurrentVisitCell = this.m_AllCells.get(randomIndex);
         this.m_StackCell.push(this.m_CurrentVisitCell);
         this.m_CurrentVisitCell.Visit();
