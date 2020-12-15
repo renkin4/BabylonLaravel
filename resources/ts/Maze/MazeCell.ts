@@ -1,6 +1,5 @@
 import { Mesh, MeshBuilder, StandardMaterial, Color3, Vector3 } from "babylonjs";
-import { BLApplication } from "../Application";
-import { blackAndWhitePixelShader } from "babylonjs/Shaders/blackAndWhite.fragment";
+import { BLApplication } from "../Application"; 
 
 export class MazeCell {
     public name:string;

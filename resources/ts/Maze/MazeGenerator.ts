@@ -86,7 +86,7 @@ export class MazeGenerator{
         newCell.x = this.m_GenerateProperties.x;
         newCell.y = this.m_GenerateProperties.y;
 
-        newCell.SetPosition(new Vector3((this.m_GenerateProperties.x * 1), 0, (this.m_GenerateProperties.y * 1)));
+        newCell.SetPosition(new Vector3((this.m_GenerateProperties.x * 1) - (this.m_Properties.width * 0.5), 0, (this.m_GenerateProperties.y * 1) - (this.m_Properties.height * 0.5)));
 
         this.m_AllCells.set(cellIndex, newCell);
         
